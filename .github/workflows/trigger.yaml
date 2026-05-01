@@ -2,7 +2,7 @@ name: event-trigger
 on:
   push:
     branches:
-      - Main
+      - main
 
 jobs:
   test:
