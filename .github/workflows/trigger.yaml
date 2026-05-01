@@ -1,0 +1,47 @@
+name: event-trigger
+on:
+  push:
+    branches:
+      - Main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Code
+      uses: actions/checkout@v3
+    - name: Install dependencies
+      run: npm ci
+    - name: Test Code
+      run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Code
+      uses: actions/checkout@v3
+    - name: Install dependencies
+      run: npm ci
+    - name: build code
+      run: npm run build
+    - name: Publish JS filename
+      id: publish
+      run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+          name: dist-file
+          path: dist
+
+   deploy:
+    
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+          name: dist-file
+    - name: output content
+      run: ls -la
+    - name: Deploy run
+      run: echo "Deploying with script file ${{ steps.publish.outputs.script-file }}"
